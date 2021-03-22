@@ -1,0 +1,46 @@
+{
+  "ignition": {
+    "version": "3.1.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "passwordHash": "!",
+        "sshAuthorizedKeys": [
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD14Gv4V5DVvyr7O6/44laYx52VYLe8yrEA3fOieWDmojRs3scqLnfeLHJWsfYA4QMjTuraLKhT8dhETSYiSR88RMM56+isLbcLshE6GkNkz3MBZE2hcdakqMDm6vucP3dJD6snuh5Hfpq7OWDaTcC0zCAzNECJv8F7LcWVa8TLpyRgpek4U022T5otE1ZVbNFqN9OrGHgyzVQLtC4xN1yT83ezo3r+OEdlSVDRQfsq73Zg26d4dyagb6lmrryUUAAbfmn/HalJTHB73LyjilKiPvJ+x2bG7AeiqyVHwtQSpt02FCdQGptmsSqqWF/b9botOO38eUsqPNppMn7LT5wzDZdDlfwTCBWkpqijPcdo/LTD9dJlNHjwXZtHETtiid6N3ZZWpA0/VKjqUeQdSnHqLEzTidswsnOjCIoIhmJFqczeP5kOty/MWdq1II/FX/EpYCJxoSWkT/hVwD6VOamGwJbLVw9LkEb0VVWFRJB5suT/T8DtPdPl+A0qUGiN4KM= oscohen@localhost.localdomain"],
+        "groups": [ "sudo" ]}
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "name": "agent.service",
+        "enabled": true,
+        "contents": "[Service]\nType=simple\nRestart=always\nRestartSec=3\nStartLimitInterval=0\nTimeoutStartSec=180\nEnvironmentFile=-/etc/systemd/system/agent.service.d/cluster-id.conf\n\nExecStartPre=podman run --privileged --rm -v /usr/local/bin:/hostbin quay.io/ocpmetal/assisted-installer-agent:latest cp /usr/bin/agent /hostbin\nExecStart=/usr/local/bin/agent --url http://127.0.0.1:6000 --cluster-id ${CLUSTER_ID} --agent-version quay.io/ocpmetal/assisted-installer-agent:latest --insecure=true  \n\n[Install]\nWantedBy=multi-user.target"
+      }
+    ]
+  },
+  "storage": {
+    "files": [
+      {
+        "overwrite": true,
+        "path": "/etc/motd",
+        "mode": 420,
+        "user": {
+          "name": "root"
+      },
+      "contents": { "source": "data:,%0A%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%0AThis%20is%20a%20host%20being%20installed%20by%20the%20OpenShift%20Assisted%20Installer.%0AIt%20will%20be%20installed%20from%20scratch%20during%20the%20installation.%0AThe%20primary%20service%20is%20agent.service.%20%20To%20watch%20its%20status%20run%20e.g%0Asudo%20journalctl%20-u%20agent.service%0A%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%20%20%2A%2A%0A" }
+    },
+      {
+        "overwrite": true,
+        "path": "/root/.docker/config.json",
+        "mode": 420,
+        "user": {
+          "name": "root"
+        },
+        "contents": { "source": "data:,%7B%22auths%22:%7B%22registry.build01.ci.openshift.org%22:%7B%22auth%22:%22dXNlcjpzaGEyNTZ+eWhWdmFzX19KTWNQWkVmMHl0MF9sN0xRX1RzVDJuRVpjR3JRejYxR2tQaw==%22%7D%2C%22registry.ci.openshift.org%22:%7B%22auth%22:%22dXNlcjpzaGEyNTZ+eWhWdmFzX19KTWNQWkVmMHl0MF9sN0xRX1RzVDJuRVpjR3JRejYxR2tQaw==%22%7D%2C%22cloud.openshift.com%22:%7B%22auth%22:%22b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfMWFmOTk4OTM2ZTAxNDM4YThkMWYyODQ2MzcyOTY0NzM6UzdQWVhTU0lLSVlLS1M3NTM2NjY4QjUxUE1ERVdDUVFPR0JIOUhaSVJIRzgxM09aWDJTMkdFUlZYSTVNNThSUg==%22%2C%22email%22:%22itsoiref@redhat.com%22%7D%2C%22quay.io%22:%7B%22auth%22:%22b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfMWFmOTk4OTM2ZTAxNDM4YThkMWYyODQ2MzcyOTY0NzM6UzdQWVhTU0lLSVlLS1M3NTM2NjY4QjUxUE1ERVdDUVFPR0JIOUhaSVJIRzgxM09aWDJTMkdFUlZYSTVNNThSUg==%22%2C%22email%22:%22itsoiref@redhat.com%22%7D%2C%22registry.ci.openshift.org%22:%7B%22auth%22:%20%22aXRzb2lyZWY6c2hhMjU2fnRleFFxLUFEU0pRSU9mRnEzMXZ1bjRDUUlLenF4aHIyVTNQcXZpOE04SG8=%22%7D%2C%22registry.connect.redhat.com%22:%7B%22auth%22:%22fHVoYy0xZngybld4RVRoN0lqMHBiRE41M2dJNHVadHM6ZXlKaGJHY2lPaUpTVXpVeE1pSjkuZXlKemRXSWlPaUprWm1FM01qWTNOamN3TWpNME9UTTNZalF6WkRsaU9XUXhOMkptT0dFeE5TSjkualNkcG9GWkFKdWg2Ullqdm1Cak15V0hTOE1VTmdfZE53aWFYZHJIUmJ1TkVTOUtKQUFsT19CbEl6TGRZOTl2VEhMNmIzdFhiLVhkbnhyOXFxVVZycEdHU2VtOVFfY2ZvS1NkaFJiaXRVbGJEOENHZFVIQzg3N2J1ZTQ2bzU3RXdWdWNpbTlvYldMc3JJcUJtWkVMdGwyNjlYSEpBSTZQY0xxRWV4bjdYQlpaQWU5Y2FMZzlfcUExN0VmZXJFeURCY1loRVpjY0I5SXFMT3NNdzE2ZWpuR1F2TzZYYlMwdmxpX3R4T1REQ1ZIblM2bGdsaEozNnpfNFZwQjBmU1RiVGxZUkEyOGwyR3MyMnBmN0NRMW83WXJVRlJtNThXV0IxbDNmUGpmMEZhbHE5WU1NczRLdmpZeUZsVUYwUG93YUxzbUxBbDB0YTFpVlAtbVZ5S0JwYXdvZTFhSFBjcklnT2pmdWtCRDAweWhqanExSFZJQVVrSmZoa1dGTjloVExCMjJkYlJvamhENHNRUGhCQWFaWE5rMVk4cjhJeEg2bVg5cWgxLXQ0cHNGVDBkRGlSVnRROTFtWnNiUDFvTkc2dWJnNmJTci1zUGZET2ZoeW10QjNkUzhyVUlyRGIzdUkweVhpOW5ZcUNiUjJVSElQdTlCb2oteG0zRlRPRG1uS3JzSHB6Z0NGdnh1T1BqOVpINFJhdFpLRUx3dFhQNEpQa2tRM0lTbzdNZldpUHV3N3hnZnNTdXRrLVJkNG56RGZxTGVyYTh2TmZpUWphWFVVUVVxOEx1MkczOUtaZVluaVlPeExLclUwdUN5TkdDVGtnS3czYmFYcTQzVkluNk9QcWNJRFk0bWp4UXItYUR1aEtQMVNSOTVRWFNoVkxMUy12VmtRMzdWTy1tWUk=%22%2C%22email%22:%22itsoiref@redhat.com%22%7D%2C%22registry.redhat.io%22:%7B%22auth%22:%22fHVoYy0xZngybld4RVRoN0lqMHBiRE41M2dJNHVadHM6ZXlKaGJHY2lPaUpTVXpVeE1pSjkuZXlKemRXSWlPaUprWm1FM01qWTNOamN3TWpNME9UTTNZalF6WkRsaU9XUXhOMkptT0dFeE5TSjkualNkcG9GWkFKdWg2Ullqdm1Cak15V0hTOE1VTmdfZE53aWFYZHJIUmJ1TkVTOUtKQUFsT19CbEl6TGRZOTl2VEhMNmIzdFhiLVhkbnhyOXFxVVZycEdHU2VtOVFfY2ZvS1NkaFJiaXRVbGJEOENHZFVIQzg3N2J1ZTQ2bzU3RXdWdWNpbTlvYldMc3JJcUJtWkVMdGwyNjlYSEpBSTZQY0xxRWV4bjdYQlpaQWU5Y2FMZzlfcUExN0VmZXJFeURCY1loRVpjY0I5SXFMT3NNdzE2ZWpuR1F2TzZYYlMwdmxpX3R4T1REQ1ZIblM2bGdsaEozNnpfNFZwQjBmU1RiVGxZUkEyOGwyR3MyMnBmN0NRMW83WXJVRlJtNThXV0IxbDNmUGpmMEZhbHE5WU1NczRLdmpZeUZsVUYwUG93YUxzbUxBbDB0YTFpVlAtbVZ5S0JwYXdvZTFhSFBjcklnT2pmdWtCRDAweWhqanExSFZJQVVrSmZoa1dGTjloVExCMjJkYlJvamhENHNRUGhCQWFaWE5rMVk4cjhJeEg2bVg5cWgxLXQ0cHNGVDBkRGlSVnRROTFtWnNiUDFvTkc2dWJnNmJTci1zUGZET2ZoeW10QjNkUzhyVUlyRGIzdUkweVhpOW5ZcUNiUjJVSElQdTlCb2oteG0zRlRPRG1uS3JzSHB6Z0NGdnh1T1BqOVpINFJhdFpLRUx3dFhQNEpQa2tRM0lTbzdNZldpUHV3N3hnZnNTdXRrLVJkNG56RGZxTGVyYTh2TmZpUWphWFVVUVVxOEx1MkczOUtaZVluaVlPeExLclUwdUN5TkdDVGtnS3czYmFYcTQzVkluNk9QcWNJRFk0bWp4UXItYUR1aEtQMVNSOTVRWFNoVkxMUy12VmtRMzdWTy1tWUk=%22%2C%22email%22:%22itsoiref@redhat.com%22%7D%7D%7D" }
+      }
+    ]
+  }
+}
