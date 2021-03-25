@@ -16,6 +16,9 @@ storage:
     - path: /etc/assisted-service/nginx.conf
       contents:
         local: assisted-service/nginx.conf
+    - path: /etc/assisted-service/fake-livecd.iso
+      contents:
+        local: assisted-service/livecd.iso
 systemd:
   units:
     - name: assisted-service.service
