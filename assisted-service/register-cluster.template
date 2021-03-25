@@ -1,0 +1,41 @@
+#!/bin/bash
+
+PULL_SECRET='YOUR_PULL_SECRET'
+
+generate_post_data()
+{
+  cat <<EOF
+{
+  "name": "test-cluster",
+  "high_availability_mode": "None",
+  "openshift_version":"4.8",
+  "pull_secret": $(echo $PULL_SECRET | jq -aR)
+}
+EOF
+}
+
+n=0
+until [ "$n" -ge 100 ]
+do
+  curl -X POST -H "Content-Type: application/json" \
+  --data "$(generate_post_data)" \
+  http://127.0.0.1:8090/api/assisted-install/v1/clusters/ && break
+
+  n=$((n+1))
+  sleep 5
+done
+
+CLUSTER_ID=$(curl http://127.0.0.1:8090/api/assisted-install/v1/clusters | jq --raw-output ".[0].id")
+
+if [ -z ${CLUSTER_ID+x} ]; then
+  echo "Failed to get cluster id, exit with failure"
+  exit 1
+else
+  echo "Cluster ID is: ${CLUSTER_ID}"
+fi
+
+mkdir -p /etc/systemd/system/agent.service.d
+echo -e [Service]\\nEnvironment=\"CLUSTER_ID=$CLUSTER_ID\" > /etc/systemd/system/agent.service.d/cluster-id.conf
+
+systemctl daemon-reload
+touch /etc/assisted-service/.register-cluster.done

@@ -6,6 +6,12 @@ LIBVIRT_ISO_PATH = /var/lib/libvirt/images/$(ISO_NAME)
 
 clean: destroy-libvirt
 
+.PHONY: checkenv
+checkenv:
+ifndef PULL_SECRET
+	$(error PULL_SECRET must be defined)
+endif
+
 destroy-libvirt:
 	echo "Destroying previous libvirt resources"
 	NET_NAME=$(NET_NAME) \
@@ -13,8 +19,12 @@ destroy-libvirt:
 	VOL_NAME=$(VOL_NAME) \
 	./virt/virt-delete.sh || true
 
+.PHONY: assisted-service/register-cluster.sh
+assisted-service/register-cluster.sh: assisted-service/register-cluster.template checkenv
+	sed -e 's/YOUR_PULL_SECRET/${PULL_SECRET}/' $< > $@
+
 # use fcct to add services and scripts to the base.ign
-ai-sno.ign: assisted-service base.ign sno-ai.fcc
+ai-sno.ign: assisted-service base.ign sno-ai.fcc assisted-service/register-cluster.sh
 	echo "Generate Ignition"
 	podman run --rm --privileged --volume ./:/assets:z quay.io/coreos/fcct:release --pretty --strict --files-dir assets /assets/sno-ai.fcc > ai-sno.ign
 

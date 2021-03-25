@@ -10,6 +10,10 @@ storage:
       contents:
         local: assisted-service/assisted-service-onprem.sh
       mode: 0555
+    - path: /usr/local/bin/register-cluster.sh
+      contents:
+        local: assisted-service/register-cluster.sh
+      mode: 0555
     - path: /etc/assisted-service/onprem-environment
       contents:
         local: assisted-service/onprem-environment
@@ -35,3 +39,18 @@ systemd:
         ExecStart=/usr/local/bin/assisted-service-onprem.sh
         [Install]
         WantedBy=multi-user.target
+    - name: register-cluster.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Create new cluster in assisted-service-onprem
+        Wants=assisted-service.service
+        After=assisted-service.service
+        Before=agent.service
+        ConditionPathExists=!/etc/assisted-service/.register-cluster.done
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/local/bin/register-cluster.sh
+        [Install]
+        WantedBy=multi-user.target
+        RequiredBy=agent.service
