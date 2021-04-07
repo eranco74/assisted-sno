@@ -14,15 +14,22 @@ storage:
       contents:
         local: assisted-service/register-cluster.sh
       mode: 0555
+    - path: /usr/local/bin/override-ignition.sh
+      contents:
+        local: assisted-service/override-ignition.sh
+      mode: 0555
     - path: /etc/assisted-service/onprem-environment
       contents:
         local: assisted-service/onprem-environment
     - path: /etc/assisted-service/nginx.conf
       contents:
         local: assisted-service/nginx.conf
-    - path: /etc/assisted-service/fake-livecd.iso
+    - path: /etc/assisted-service/assisted-data/livecd.iso
       contents:
         local: assisted-service/livecd.iso
+    - path: /etc/assisted-service/assisted-service.fcc
+      contents:
+        local: assisted-service/assisted-service.fcc
 systemd:
   units:
     - name: assisted-service.service
@@ -51,6 +58,19 @@ systemd:
         [Service]
         Type=oneshot
         ExecStart=/usr/local/bin/register-cluster.sh
+        [Install]
+        WantedBy=multi-user.target
+        RequiredBy=agent.service
+    - name: override-ignition.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Update the master ignition with assisted-service-onprem
+        Wants=assisted-service.service
+        After=assisted-service.service
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/local/bin/override-ignition.sh
         [Install]
         WantedBy=multi-user.target
         RequiredBy=agent.service

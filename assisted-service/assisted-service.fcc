@@ -1,0 +1,39 @@
+variant: fcos
+version: 1.1.0
+ignition:
+  config:
+    merge:
+      - local: master.ign
+storage:
+  trees:
+    - local: postgress-data
+      path: /etc/assisted-service/postgress-data
+    - local: assisted-data
+      path: /etc/assisted-service/assisted-data/
+  files:
+    - path: /usr/local/bin/assisted-service-onprem.sh
+      contents:
+        local: bin/assisted-service-onprem.sh
+      mode: 0555
+    - path: /etc/assisted-service/onprem-environment
+      contents:
+        local: onprem-environment
+    - path: /etc/assisted-service/nginx.conf
+      contents:
+        local: nginx.conf
+systemd:
+  units:
+    - name: assisted-service.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=assisted-service-onprem - run assisted-service
+        [Service]
+        Type=simple
+        Restart=always
+        RestartSec=5
+        StartLimitInterval=0
+        TimeoutStartSec=180
+        ExecStart=/usr/local/bin/assisted-service-onprem.sh
+        [Install]
+        WantedBy=multi-user.target
