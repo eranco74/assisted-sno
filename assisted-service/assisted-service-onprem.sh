@@ -2,6 +2,8 @@
 # Unsure this is still required
 install -d -m 0777  /etc/assisted-service/postgress-data/
 
+echo "Update onprem-environment file with node IP"
+sed -i "s/<NODE_IP>/$(hostname -I | cut -d' ' -f1)/" /etc/assisted-service/onprem-environment
 echo "Starting assisted-installer onprem"
 podman  pod rm assisted-installer-onprem -f | true
 podman pod create --name assisted-installer-onprem -p 5432:5432,8000:8000,8090:8090,8080:8080
@@ -12,7 +14,7 @@ sleep 15
 if [ -f /etc/assisted-service/postgress-data/installer.sql ]; then
   echo "Restoring postgress data"
   podman exec -it db bash -c "psql installer <  /opt/app-root/src/installer.sql"
-  # Update host status info
+  echo "Update host status and stage"
   podman exec -it db /usr/bin/psql -d installer -c "UPDATE hosts SET status='installing-in-progress', progress_current_stage='Configuring' WHERE id is not null;"
 fi
 

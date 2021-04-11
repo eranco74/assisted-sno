@@ -37,6 +37,7 @@ systemd:
       contents: |
         [Unit]
         Description=assisted-service-onprem - run assisted-service
+        After=network-online.target
         [Service]
         Type=simple
         Restart=always
