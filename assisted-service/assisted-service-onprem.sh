@@ -11,8 +11,9 @@ echo "Wait for the DB to start..."
 sleep 15
 if [ -f /etc/assisted-service/postgress-data/installer.sql ]; then
   echo "Restoring postgress data"
-  podman exec -it db psql installer <  /etc/assisted-service/postgress-data/installer.sql
   podman exec -it db bash -c "psql installer <  /opt/app-root/src/installer.sql"
+  # Update host status info
+  podman exec -it db /usr/bin/psql -d installer -c "UPDATE hosts SET status='installing-in-progress', progress_current_stage='Configuring' WHERE id is not null;"
 fi
 
 podman run --pod assisted-installer-onprem --env-file /etc/assisted-service/onprem-environment --env DUMMY_IGNITION=False \
