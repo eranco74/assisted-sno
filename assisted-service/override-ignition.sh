@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euoE pipefail ## -E option will cause functions to inherit trap
 
 until [ -f /usr/local/bin/bootstrap-in-place.sh ]; do
   echo "Waiting for bootstrap-in-place.sh"

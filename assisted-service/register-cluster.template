@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euoE pipefail ## -E option will cause functions to inherit trap
 
 PULL_SECRET='YOUR_PULL_SECRET'
 
