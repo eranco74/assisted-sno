@@ -2,6 +2,13 @@
 # Unsure this is still required
 install -d -m 0777  /etc/assisted-service/postgress-data/
 
+echo "Wait for node IP"
+hostname -I | cut -d' ' -f1
+until [ $(hostname -I | cut -d' ' -f1) ]; 
+do
+  echo "Waiting for node IP";
+  sleep 2; 
+done
 echo "Update onprem-environment file with node IP"
 sed -i "s/<NODE_IP>/$(hostname -I | cut -d' ' -f1)/" /etc/assisted-service/onprem-environment
 echo "Starting assisted-installer onprem"
