@@ -17,7 +17,7 @@
       {
         "name": "agent.service",
         "enabled": true,
-        "contents": "[Service]\nType=simple\nRestart=always\nRestartSec=3\nStartLimitInterval=0\nTimeoutStartSec=180\nEnvironmentFile=-/etc/systemd/system/agent.service.d/cluster-id.conf\n\nExecStartPre=podman run --privileged --rm -v /usr/local/bin:/hostbin quay.io/ocpmetal/assisted-installer-agent:latest cp /usr/bin/agent /hostbin\nExecStart=/usr/local/bin/agent --url http://127.0.0.1:8090 --cluster-id ${CLUSTER_ID} --agent-version quay.io/ocpmetal/assisted-installer-agent:latest --insecure=true  \n\n[Install]\nWantedBy=multi-user.target"
+        "contents": "[Service]\nType=simple\nRestart=always\nRestartSec=3\nStartLimitInterval=0\nTimeoutStartSec=180\nEnvironmentFile=-/etc/systemd/system/agent.service.d/cluster-id.conf\n\nExecStartPre=podman run --privileged --rm -v /usr/local/bin:/hostbin quay.io/ocpmetal/assisted-installer-agent:latest cp /usr/bin/agent /hostbin\nExecStart=/usr/local/bin/agent --url http://127.0.0.1:8090 --infra-env-id ${INFRA_ENV_ID} --agent-version quay.io/ocpmetal/assisted-installer-agent:latest --insecure=true  \n\n[Install]\nWantedBy=multi-user.target"
       }
     ]
   },

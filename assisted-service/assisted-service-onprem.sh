@@ -29,5 +29,5 @@ fi
 
 podman run --pod assisted-installer-onprem --env-file /etc/assisted-service/onprem-environment --env DUMMY_IGNITION=False \
  -v /etc/assisted-service/assisted-data:/data:z -v /bin/coreos-installer:/data/coreos-installer:z --restart always \
- --name installer quay.io/eranco74/bm-inventory:onprem
+ --name installer quay.io/ocpmetal/assisted-service:latest
 

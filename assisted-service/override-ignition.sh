@@ -13,7 +13,13 @@ echo "Create postgress backup"
 podman exec -it db pg_dump installer >  /etc/assisted-service/postgress-data/installer.sql
 
 # copy the original master ignition
-cp /opt/openshift/master.ign /etc/assisted-service/
+if [ ! -f /etc/assisted-service/master.ign ];
+then
+    cp /opt/openshift/master.ign /etc/assisted-service/
+fi
+
+rm /etc/assisted-service/assisted-data/rhcos*
+
 # Generate the ignition
 echo "Rendering ignition"
 podman run --rm -v /usr/local/bin:/data/bin -v /etc/assisted-service/:/data quay.io/coreos/fcct:release --pretty -d /data --strict /data/assisted-service.fcc > /opt/openshift/master.ign

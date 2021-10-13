@@ -16,8 +16,8 @@ if [ -z ${NET_NAME+x} ]; then
 fi
 
 OS_VARIANT="rhel8.1"
-RAM_MB="16384"
-DISK_GB="20"
+RAM_MB="20000"
+DISK_GB="30"
 CPU_CORE="6"
 
 nohup virt-install \

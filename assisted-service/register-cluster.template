@@ -9,7 +9,7 @@ generate_post_data()
 {
   "name": "test-cluster",
   "high_availability_mode": "None",
-  "openshift_version":"4.8",
+  "openshift_version":"4.9",
   "pull_secret": $(echo $PULL_SECRET | jq -aR)
 }
 EOF
@@ -27,16 +27,20 @@ do
 done
 
 CLUSTER_ID=$(curl http://127.0.0.1:8090/api/assisted-install/v1/clusters | jq --raw-output ".[0].id")
+INFRA_ENV_ID=$(curl http://127.0.0.1:8090/api/assisted-install/v2/infra-envs/ | jq --raw-output ".[0].id")
 
-if [ -z ${CLUSTER_ID+x} ]; then
+
+if [ -z ${CLUSTER_ID} ]; then
   echo "Failed to get cluster id, exit with failure"
-  exit 1
+  exit 0
 else
   echo "Cluster ID is: ${CLUSTER_ID}"
+  echo "InfraEnv ID is: ${INFRA_ENV_ID}"
 fi
 
 mkdir -p /etc/systemd/system/agent.service.d
-echo -e [Service]\\nEnvironment=\"CLUSTER_ID=$CLUSTER_ID\" > /etc/systemd/system/agent.service.d/cluster-id.conf
+echo -e "[Service]\\nEnvironment=\"CLUSTER_ID=$CLUSTER_ID\"\nEnvironment=\"INFRA_ENV_ID=$INFRA_ENV_ID\"" > /etc/systemd/system/agent.service.d/cluster-id.conf
 
 systemctl daemon-reload
-touch /etc/assisted-service/.register-cluster.done
+echo "Cluster ID: ${CLUSTER_ID}" > /etc/assisted-service/.register-cluster.done
+echo "InfraEnv ID: ${INFRA_ENV_ID}" >> /etc/assisted-service/.register-cluster.done
